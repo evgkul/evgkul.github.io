@@ -1,7 +1,0 @@
----
-vertex_shader: shaders/chunk.glsl.vert
-fragment_shader: shaders/chunk_transparent_part.glsl.frag
-depth_func: LessEqual
-depth_write: true
-face_culling: Back
-blending: ~

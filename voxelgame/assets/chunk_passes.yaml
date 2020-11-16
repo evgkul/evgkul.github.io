@@ -1,7 +1,0 @@
-opaque:
-  pipeline_name: "chunkrenderer_opaque"
-transparent_clip:
-  pipeline_name: "chunkrenderer_transparent_clip"
-transparent:
-  pipeline_name: chunkrenderer_wboit
-  next_pass: transparent_clip
