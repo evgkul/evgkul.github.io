@@ -1,6 +1,7 @@
 assets_index
 lua
 lua/generated
+lua/generated/ecs.lua
 lua/generated/asynctools.lua
 lua/generated/load.lua
 lua/generated/mesh.lua
@@ -15,6 +16,12 @@ lua/generated/gltf
 lua/generated/gltf/gltf.lua
 lua/generated/gltf/loader.lua
 lua/generated/basic_camera.lua
+lua/generated/mesh
+lua/generated/mesh/cube_gen.lua
+lua/generated/mesh/mesh.lua
+lua/generated/mesh/character_model.lua
+lua/generated/mesh/basic_program.lua
+lua/generated/mesh/mesh_utils.lua
 lua/generated/fibers.lua
 lua/generated/tasks.lua
 lua/generated/utils.lua

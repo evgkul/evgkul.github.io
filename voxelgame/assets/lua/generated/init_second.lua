@@ -6,7 +6,7 @@ local createFiber = ____fibers.createFiber
 local pwait = ____fibers.pwait
 local ____indicators = require("indicators")
 local Indicators = ____indicators.Indicators
-local ____mesh_utils = require("mesh_utils")
+local ____mesh_utils = require("mesh.mesh_utils")
 local cubeMesh = ____mesh_utils.cubeMesh
 local ____testgame = require("testgame")
 local init2 = ____testgame.initialize
@@ -14,11 +14,15 @@ local ____testgraphics = require("testgraphics")
 local initGraphics = ____testgraphics.initGraphics
 local luahotbar = require("hotbar")
 local ____entity = require("entity")
+local ecs = ____entity.ecs
 local TestEntity = ____entity.TestEntity
 local ____basic_camera = require("basic_camera")
 local CameraMovementController = ____basic_camera.CameraMovementController
 local trenderer, tentity, thotbar, controller, dcontext, indicators, mtime, canvas, onTick
 function onTick(time)
+    ecs:tick(time)
+    ecs:render(time)
+    trenderer:update(time)
     local camera = trenderer.camera
     mtime = mtime + time
     dcontext:resetTransforms()
@@ -38,11 +42,11 @@ function onTick(time)
             controller:resetPosition()
             tentity.hitbox:addForce(x * 100, y * 100, z * 100)
         end
-        local x, y, z = tentity.hitbox:getPosition()
-        camera:setPos(x + 0.45, y + 0.45, z + 0.45)
+        local x, y, z = tentity:getEyePoint()
+        camera:setPos(x, y, z)
     end
     dcontext:loadCamera(camera)
-    trenderer:draw(dcontext, camera)
+    trenderer:draw(dcontext, camera, time)
     canvas:resetTransform()
     canvas:zerototop()
     canvas:popTransformation()
@@ -181,6 +185,7 @@ window:setKeyHandler(
             controller.doMoveLeft = action == 1
             camera:setMovementState(3, action == 1)
         elseif key == 256 then
+            os.exit(0)
         elseif ((key >= 49) and (key <= 57)) and (action == 1) then
             local slotnum = key - 49
             thotbar:setActiveSlot(slotnum)
@@ -235,6 +240,10 @@ window:setScrollHandler(
     end
 )
 indicators = __TS__New(Indicators, camera)
+local PhysicsMovementController = __TS__Class()
+PhysicsMovementController.name = "PhysicsMovementController"
+function PhysicsMovementController.prototype.____constructor(self)
+end
 mtime = 0
 canvas = newCanvas(
     getDefaultFramebuffer()

@@ -1,12 +1,12 @@
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 require("lualib_bundle");
 local ____exports = {}
+local ____character_model = require("mesh.character_model")
+local testCharacter = ____character_model.testCharacter
 local ____fibers = require("fibers")
 local wait = ____fibers.wait
-local ____mesh = require("mesh")
+local ____mesh = require("mesh.mesh")
 local GroupNode = ____mesh.GroupNode
-local ____mesh_utils = require("mesh_utils")
-local testModel = ____mesh_utils.testModel
 function ____exports.buildAtlas(self)
     print("BUILDATLAS")
     local img = newImageRGBA(2048, 2048)
@@ -112,7 +112,7 @@ function TestRenderer.prototype.____constructor(self, camera, world)
     self.opaque_pass = gamedata:getPassID("opaque")
     self.alpha_pass = gamedata:getPassID("alpha")
     self.alphaclip_pass = gamedata:getPassID("alphaclip")
-    self.tmesh = testModel(nil)
+    self.tmesh = testCharacter(nil)
     self.root = __TS__New(GroupNode)
     self.draw = self:buildRenderFunc()
     self.tmesh:setPosition(0, 10, 0)
@@ -141,6 +141,9 @@ function TestRenderer.prototype.buildFramebuffers(self, w, h)
     self.postprocessProgram:setTexture("alpha", self.tex_alpha)
     self.draw = self:buildRenderFunc()
 end
+function TestRenderer.prototype.update(self, dtime)
+    self.root:update(dtime)
+end
 function TestRenderer.prototype.buildRenderFunc(self)
     local ____ = self
     local root = ____.root
@@ -153,7 +156,7 @@ function TestRenderer.prototype.buildRenderFunc(self)
     local postprocessProgram = ____.postprocessProgram
     local worldrenderer = ____.worldrenderer
     local stime = 0
-    return function(self, dcontext, camera)
+    return function(self, dcontext, camera, dtime)
         do
         end
         stime = stime + 0.1
