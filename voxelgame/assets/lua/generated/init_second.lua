@@ -14,10 +14,12 @@ local ____testgraphics = require("testgraphics")
 local initGraphics = ____testgraphics.initGraphics
 local luahotbar = require("hotbar")
 local ____entity = require("entity")
-local ecs = ____entity.ecs
 local TestEntity = ____entity.TestEntity
 local ____basic_camera = require("basic_camera")
 local CameraMovementController = ____basic_camera.CameraMovementController
+local ____game_ecs = require("game_ecs")
+local ecs = ____game_ecs.ecs
+local worlds = ____game_ecs.worlds
 local trenderer, tentity, thotbar, controller, dcontext, indicators, mtime, canvas, onTick
 function onTick(time)
     ecs:tick(time)
@@ -34,7 +36,11 @@ function onTick(time)
     )
     do
         do
-            camera:setDir(controller.dirX, controller.dirY, controller.dirZ)
+            local dirX = controller.dirX
+            local dirY = controller.dirY
+            local dirZ = controller.dirZ
+            camera:setDir(dirX, dirY, dirZ)
+            tentity.model:setDirection(dirX, dirY, dirZ)
             controller:tick(time)
             local x = controller.x
             local y = controller.y
@@ -98,9 +104,10 @@ local initialize = createFiber(
     "initialize",
     function(res)
         local data = init2(nil)
-        testworld = data.world
+        local worlddef = worlds.test
+        testworld = worlddef.chunkworld
         tentity = __TS__New(TestEntity, testworld)
-        trenderer = initGraphics(nil, camera, testworld)
+        trenderer = initGraphics(nil, camera, worlddef)
         trenderer.root:addNode(tentity)
         log_info("Finished initialize")
         res(data)
@@ -231,7 +238,7 @@ window:setResizeHandler(
         setFramebuffers(nil, w, h)
     end
 )
-local cur_dist = -0.3
+local cur_dist = 0
 camera:setOrbitDistance(cur_dist)
 window:setScrollHandler(
     function(x, y)

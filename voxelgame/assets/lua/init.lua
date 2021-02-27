@@ -2,6 +2,7 @@ print = log_info
 
 print("Hello from lua")
 
+math.atan2 = math.atan2 or math.atan --Lua 5.3
 
 
 do --Fixing incompatibilities between luajit and lua 5.4

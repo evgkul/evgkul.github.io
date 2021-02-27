@@ -3,6 +3,7 @@ require("lualib_bundle");
 local ____exports = {}
 local sin = math.sin
 local cos = math.cos
+local _transform = newTransform3D()
 ____exports.BasicNode = __TS__Class()
 local BasicNode = ____exports.BasicNode
 BasicNode.name = "BasicNode"
@@ -19,6 +20,11 @@ function BasicNode.prototype.____constructor(self)
     self.sy = 1
     self.sz = 1
     self:updateTransform()
+end
+function BasicNode.prototype.remove(self)
+    if self.parent then
+        self.parent:removeNode(self)
+    end
 end
 function BasicNode.prototype.updateTransform(self)
     local t = self.transform
@@ -77,6 +83,20 @@ function BasicNode.prototype.draw(self, dcontext, camera)
 end
 function BasicNode.prototype.update(self, dtime)
 end
+function BasicNode.prototype.localToGlobal(self, x, y, z, to)
+    _transform:reset()
+    local curnode = self
+    while curnode and (curnode ~= to) do
+        _transform:insertTransform(curnode.transform)
+        curnode = curnode.parent
+    end
+    if curnode ~= to then
+        error("Unable to reach target node!", 0)
+    end
+    _transform:invert()
+    local tx, ty, tz, tw = _transform:transformVec(x, y, z, 1)
+    return tx, ty, tz
+end
 ____exports.Primitive = __TS__Class()
 local Primitive = ____exports.Primitive
 Primitive.name = "Primitive"
@@ -100,22 +120,36 @@ function GroupNode.prototype.____constructor(self)
     GroupNode.____super.prototype.____constructor(self)
     self.subnodes = {}
     self.named = {}
-    self.named_nums = {}
     self.transform = newTransform3D()
 end
 function GroupNode.prototype.addNode(self, node)
+    node:remove()
     local pos = __TS__ArrayPush(self.subnodes, node) - 1
     local name = node.name
     if name then
         self.named[name] = node
-        self.named_nums[name] = pos
     end
+    node.parent = self
 end
 function GroupNode.prototype.addNodes(self, ...)
     local nodes = {...}
     for ____, node in ipairs(nodes) do
         self:addNode(node)
     end
+end
+function GroupNode.prototype.removeNode(self, node)
+    local i = __TS__ArrayIndexOf(self.subnodes, node)
+    if i > -1 then
+        table.remove(self.subnodes, i + 1)
+    end
+    local name = node.name
+    if name then
+        local old = self.named[name]
+        if old == node then
+            __TS__Delete(self.named, name)
+        end
+    end
+    node.parent = nil
 end
 function GroupNode.prototype.loadNamedInto(self, to)
     if self.name then

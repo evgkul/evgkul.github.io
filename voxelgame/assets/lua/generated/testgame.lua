@@ -1,5 +1,9 @@
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+require("lualib_bundle");
 local ____exports = {}
+local ____game_ecs = require("game_ecs")
+local WorldDef = ____game_ecs.WorldDef
+local worlds = ____game_ecs.worlds
 local ____testgraphics = require("testgraphics")
 local buildAtlas = ____testgraphics.buildAtlas
 local ____worldgen = require("worldgen")
@@ -70,6 +74,7 @@ function ____exports.initialize(self)
     registerBlocks(nil)
     log_info("Blocks registered")
     local world = newChunkWorld()
+    worlds.test = __TS__New(WorldDef, world)
     genWorld(nil, world)
     return {world = world}
 end

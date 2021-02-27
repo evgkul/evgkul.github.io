@@ -102,7 +102,7 @@ local UNINIT = nil
 ____exports.TestRenderer = __TS__Class()
 local TestRenderer = ____exports.TestRenderer
 TestRenderer.name = "TestRenderer"
-function TestRenderer.prototype.____constructor(self, camera, world)
+function TestRenderer.prototype.____constructor(self, camera, worlddef)
     self.tex_opaque = UNINIT
     self.tex_alpha = UNINIT
     self.depthstencil = UNINIT
@@ -115,6 +115,9 @@ function TestRenderer.prototype.____constructor(self, camera, world)
     self.tmesh = testCharacter(nil)
     self.root = __TS__New(GroupNode)
     self.draw = self:buildRenderFunc()
+    self.worlddef = worlddef
+    self.world = worlddef.chunkworld
+    self.root:addNode(worlddef.node)
     self.tmesh:setPosition(0, 10, 0)
     self.camera = camera
     log_info("Creating test program")
@@ -124,8 +127,7 @@ function TestRenderer.prototype.____constructor(self, camera, world)
     local p = newDynProgram({v, f}, params)
     self.postprocessProgram = p:inst()
     log_info("Created test program", self.postprocessProgram)
-    self.world = world
-    self.worldrenderer = newChunkWorldRenderer(world)
+    self.worldrenderer = newChunkWorldRenderer(worlddef.chunkworld)
     self:buildFramebuffers(
         window:getDimensions()
     )

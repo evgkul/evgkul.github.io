@@ -34,6 +34,18 @@ local function setLookAt(self, obj, dx, dy, dz)
         _transform:toQuat()
     )
 end
+local function dirToQuat(self, dx, dy, dz)
+    _transform:reset()
+    _transform:rotateByAxis(
+        rad(90),
+        0,
+        1,
+        0
+    )
+    _transform:lookAtDir(dx, dy, dz, 0, 1, 0)
+    return _transform:toQuat()
+end
+local MUL_PARTS = 3.14 / 8
 ____exports.CharacterNode = __TS__Class()
 local CharacterNode = ____exports.CharacterNode
 CharacterNode.name = "CharacterNode"
@@ -88,7 +100,25 @@ function CharacterNode.prototype.animationStep(self, time)
     end
 end
 function CharacterNode.prototype.setDirection(self, dx, dy, dz)
-    setLookAt(nil, self.head, dx, dy, dz)
+    local p = asin(dy)
+    local y = math.atan2(dx, dz)
+    local y_cleaned = math.floor(y / MUL_PARTS) * MUL_PARTS
+    local y_delta = (y - y_cleaned) + (math.pi / 2)
+    local hc = math.sqrt(1 - (dy * dy))
+    setLookAt(
+        nil,
+        self.head,
+        sin(y_delta) * cos(p),
+        sin(p),
+        cos(y_delta) * cos(p)
+    )
+    setLookAt(
+        nil,
+        self,
+        sin(y_cleaned),
+        0,
+        cos(y_cleaned)
+    )
 end
 function CharacterNode.prototype.draw(self, dcontext, camera)
     self:animationStep(0.1)
