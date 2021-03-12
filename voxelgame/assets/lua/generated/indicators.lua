@@ -8,6 +8,7 @@ function Indicators.prototype.____constructor(self, camera)
     self.delta_accum = 0
     self.frames = 0
     self.cur_fps = 0
+    self.hitbox = newHitbox(1, 1, 1)
     self.camera = camera
 end
 function Indicators.prototype.draw(self, canvas, delta)
@@ -21,7 +22,7 @@ function Indicators.prototype.draw(self, canvas, delta)
     canvas:zerototop()
     local h = 0.05
     local y = 0
-    local cx, cy, cz = self.camera:getPos()
+    local cx, cy, cz = self.hitbox:getPosition()
     local msg = string.format("FPS: %.2f\nX: %.2f\nY: %.2f\nZ: %.2f", self.cur_fps, cx, cy, cz)
     canvas:textline(-1, y, 0.05, h, msg, 4294967295, false)
     y = y + h

@@ -58,6 +58,9 @@ function CharacterNode.prototype.____constructor(self, ...)
     self.armL = nil
     self.legL = nil
     self.legR = nil
+    self.dirX = 0
+    self.dirY = 0
+    self.dirZ = -1
     self.walkTime = 0
     self.doWalk = false
 end
@@ -78,7 +81,8 @@ function CharacterNode.prototype.animationStep(self, time)
     local walkTime = ____.walkTime
     local legL = ____.legL
     local legR = ____.legR
-    if doWalk or (walkTime > 0) then
+    local walks = doWalk
+    if walks or (walkTime > 0) then
         legL:setRotationEuler(
             0,
             0,
@@ -90,7 +94,7 @@ function CharacterNode.prototype.animationStep(self, time)
             -1 * sin(walkTime)
         )
         walkTime = walkTime + time
-        if (not doWalk) and (((pi - (walkTime % pi)) - time) < 0.01) then
+        if (not walks) and (((pi - (walkTime % pi)) - time) < 0.01) then
             self.walkTime = 0
             legL:setRotationEuler(0, 0, 0)
             legR:setRotationEuler(0, 0, 0)
@@ -100,6 +104,9 @@ function CharacterNode.prototype.animationStep(self, time)
     end
 end
 function CharacterNode.prototype.setDirection(self, dx, dy, dz)
+    self.dirX = dx
+    self.dirY = dy
+    self.dirZ = dz
     local p = asin(dy)
     local y = math.atan2(dx, dz)
     local y_cleaned = math.floor(y / MUL_PARTS) * MUL_PARTS
@@ -124,6 +131,12 @@ function CharacterNode.prototype.draw(self, dcontext, camera)
     self:animationStep(0.1)
     local cx, cy, cz = camera:getPos()
     GroupNode.prototype.draw(self, dcontext, camera)
+end
+function CharacterNode.prototype.getEyePoint(self)
+    return self.head:localToGlobal(0, 0.25, 0)
+end
+function CharacterNode.prototype.getEyeDirection(self)
+    return self.dirX, self.dirY, self.dirZ
 end
 local defaultLayout = {body = {{5 / 16, 5 / 16, 2 / 16, 3 / 16}, {8 / 16, 5 / 16, 2 / 16, 3 / 16}, {5 / 16, 4 / 16, 2 / 16, 1 / 16}, {7 / 16, 4 / 16, 2 / 16, 1 / 16}, {4 / 16, 5 / 16, 1 / 16, 3 / 16}, {7 / 16, 5 / 16, 1 / 16, 3 / 16}}, head = {{1 / 8, 1 / 8, 1 / 8, 1 / 8}, {3 / 8, 1 / 8, 1 / 8, 1 / 8}, {1 / 8, 0 / 8, 1 / 8, 1 / 8}, {2 / 8, 0 / 8, 1 / 8, 1 / 8}, {0 / 8, 1 / 8, 1 / 8, 1 / 8}, {2 / 8, 1 / 8, 1 / 8, 1 / 8}}, armR = {{11 / 16, 5 / 16, 1 / 16, 3 / 16}, {13 / 16, 5 / 16, 1 / 16, 3 / 16}, {11 / 16, 4 / 16, 1 / 16, 1 / 16}, {12 / 16, 4 / 16, 1 / 16, 1 / 16}, {10 / 16, 5 / 16, 1 / 16, 3 / 16}, {12 / 16, 5 / 16, 1 / 16, 3 / 16}}, armL = {{(-2 / 16) + (11 / 16), (8 / 16) + (5 / 16), 1 / 16, 3 / 16}, {(-2 / 16) + (13 / 16), (8 / 16) + (5 / 16), 1 / 16, 3 / 16}, {(-2 / 16) + (11 / 16), (8 / 16) + (4 / 16), 1 / 16, 1 / 16}, {(-2 / 16) + (12 / 16), (8 / 16) + (4 / 16), 1 / 16, 1 / 16}, {(-2 / 16) + (10 / 16), (8 / 16) + (5 / 16), 1 / 16, 3 / 16}, {(-2 / 16) + (12 / 16), (8 / 16) + (5 / 16), 1 / 16, 3 / 16}}, legL = {{(4 / 16) + (1 / 16), (8 / 16) + (5 / 16), 1 / 16, 3 / 16}, {(4 / 16) + (3 / 16), (8 / 16) + (5 / 16), 1 / 16, 3 / 16}, {(4 / 16) + (1 / 16), (8 / 16) + (4 / 16), 1 / 16, 1 / 16}, {(4 / 16) + (2 / 16), (8 / 16) + (4 / 16), 1 / 16, 1 / 16}, {(4 / 16) + (0 / 16), (8 / 16) + (5 / 16), 1 / 16, 3 / 16}, {(4 / 16) + (2 / 16), (8 / 16) + (5 / 16), 1 / 16, 3 / 16}}, legR = {{1 / 16, 5 / 16, 1 / 16, 3 / 16}, {3 / 16, 5 / 16, 1 / 16, 3 / 16}, {1 / 16, 4 / 16, 1 / 16, 1 / 16}, {2 / 16, 4 / 16, 1 / 16, 1 / 16}, {0 / 16, 5 / 16, 1 / 16, 3 / 16}, {2 / 16, 5 / 16, 1 / 16, 3 / 16}}}
 local kenneyNLLayout = {body = {{476 / 1024, 404 / 1024, 148 / 1024, 220 / 1024}, {((476 / 1024) + (148 / 1024)) + (70 / 1024), 404 / 1024, 148 / 1024, 220 / 1024}, {476 / 1024, 330 / 1024, 148 / 1024, 74 / 1024}, {476 / 1024, 624 / 1024, 148 / 1024, 74 / 1024}, {(476 / 1024) - (70 / 1024), 404 / 1024, 70 / 1024, 220 / 1024}, {624 / 1024, 404 / 1024, 70 / 1024, 220 / 1024}}, head = {{(70 / 1024) + (148 / 1024), 158 / 1024, 148 / 1024, 148 / 1024}, {(70 / 1024) + ((148 / 1024) * 3), 158 / 1024, 148 / 1024, 148 / 1024}, {(70 / 1024) + (148 / 1024), (158 / 1024) - (148 / 1024), 148 / 1024, 148 / 1024}, {(70 / 1024) + (148 / 1024), (158 / 1024) + (148 / 1024), 148 / 1024, 148 / 1024}, {70 / 1024, 158 / 1024, 148 / 1024, 148 / 1024}, {(70 / 1024) + ((148 / 1024) * 2), 158 / 1024, 148 / 1024, 148 / 1024}}, armR = {{112 / 1024, 480 / 1024, 74 / 1024, 215 / 1024}, {((112 / 1024) + (74 / 1024)) + (70 / 1024), 480 / 1024, 74 / 1024, 215 / 1024}, {112 / 1024, (480 / 1024) - (70 / 1024), 74 / 1024, 70 / 1024}, {112 / 1024, (480 / 1024) + (215 / 1024), 74 / 1024, 70 / 1024}, {(112 / 1024) - (70 / 1024), 480 / 1024, 70 / 1024, 215 / 1024}, {(112 / 1024) + (74 / 1024), 480 / 1024, 70 / 1024, 215 / 1024}}, armL = {{852 / 1024, 92 / 1024, 74 / 1024, 215 / 1024}, {((852 / 1024) - (74 / 1024)) - (70 / 1024), 92 / 1024, 74 / 1024, 215 / 1024}, {852 / 1024, (92 / 1024) - (70 / 1024), 74 / 1024, 70 / 1024}, {852 / 1024, (92 / 1024) + (215 / 1024), 74 / 1024, 70 / 1024}, {(852 / 1024) - (70 / 1024), 92 / 1024, 70 / 1024, 215 / 1024}, {(852 / 1024) + (74 / 1024), 92 / 1024, 70 / 1024, 215 / 1024}}, legR = {{354 / 1024, 726 / 1024, 76 / 1024, 217 / 1024}, {((354 / 1024) + (76 / 1024)) + (70 / 1024), 726 / 1024, 76 / 1024, 217 / 1024}, {354 / 1024, (726 / 1024) - (70 / 1024), 76 / 1024, 70 / 1024}, {354 / 1024, (726 / 1024) + (215 / 1024), 76 / 1024, 70 / 1024}, {(354 / 1024) - (70 / 1024), 726 / 1024, 76 / 1024, 217 / 1024}, {(354 / 1024) + (76 / 1024), 726 / 1024, 76 / 1024, 217 / 1024}}, legL = {{856 / 1024, 704 / 1024, 76 / 1024, 217 / 1024}, {((856 / 1024) - (76 / 1024)) - (70 / 1024), 704 / 1024, 76 / 1024, 217 / 1024}, {856 / 1024, (704 / 1024) - (70 / 1024), 76 / 1024, 70 / 1024}, {856 / 1024, (704 / 1024) + (215 / 1024), 76 / 1024, 70 / 1024}, {(856 / 1024) - (70 / 1024), 704 / 1024, 76 / 1024, 217 / 1024}, {(856 / 1024) + (76 / 1024), 704 / 1024, 76 / 1024, 217 / 1024}}}
@@ -153,16 +166,16 @@ function ____exports.testCharacter(self)
     end
     local res = __TS__New(____exports.CharacterNode)
     local bx = 0.25
-    local by = 0.75
+    local by = 0.675
     local bz = 0.5
     local body = node(nil, "body", -bx / 2, -by / 2, -bz / 2, bx, by, bz)
-    local hx = 0.5
-    local hy = 0.5
-    local hz = 0.5
+    local hx = 0.45
+    local hy = 0.45
+    local hz = 0.45
     local head = node(nil, "head", -hx / 2, 0, -hz / 2, hx, hy, hz)
     head:setPosition(0, by / 2, 0)
     local ax = 0.25
-    local ay = 0.75
+    local ay = 0.675
     local az = 0.25
     local arm_r = node(nil, "armR", -ax, -ay, -az, ax, ay, az)
     arm_r:setRotationEuler(
@@ -179,7 +192,7 @@ function ____exports.testCharacter(self)
     )
     arm_l:setPosition(0, by / 2, -bz / 2)
     local lx = 0.25
-    local ly = 0.75
+    local ly = 0.675
     local lz = 0.25 - 0.0001
     local leg_l = node(nil, "legL", -lx / 2, -ly, -lz / 2, lx, ly, lz)
     leg_l:setPosition(0, -by / 2, -lz / 2)

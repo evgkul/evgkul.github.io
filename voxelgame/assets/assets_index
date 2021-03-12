@@ -3,6 +3,13 @@ lua
 lua/generated
 lua/generated/ecs.lua
 lua/generated/worldgen.lua
+lua/generated/components
+lua/generated/components/movement_animation.lua
+lua/generated/components/hitbox.lua
+lua/generated/components/model.lua
+lua/generated/components/index.lua
+lua/generated/components/movement.lua
+lua/generated/components/camera_controller.lua
 lua/generated/lualib_bundle.lua
 lua/generated/hotbar.lua
 lua/generated/indicators.lua
@@ -10,6 +17,7 @@ lua/generated/gltf
 lua/generated/gltf/gltf.lua
 lua/generated/gltf/loader.lua
 lua/generated/basic_camera.lua
+lua/generated/vec3.lua
 lua/generated/mesh
 lua/generated/mesh/cube_gen.lua
 lua/generated/mesh/mesh.lua
@@ -17,6 +25,7 @@ lua/generated/mesh/character_model.lua
 lua/generated/mesh/basic_program.lua
 lua/generated/mesh/mesh_utils.lua
 lua/generated/fibers.lua
+lua/generated/game_ecs_core.lua
 lua/generated/utils.lua
 lua/generated/testgraphics.lua
 lua/generated/init_second.lua

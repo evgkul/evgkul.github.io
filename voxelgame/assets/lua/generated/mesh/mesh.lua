@@ -97,6 +97,20 @@ function BasicNode.prototype.localToGlobal(self, x, y, z, to)
     local tx, ty, tz, tw = _transform:transformVec(x, y, z, 1)
     return tx, ty, tz
 end
+function BasicNode.prototype.getEyePoint(self)
+    return self:localToGlobal(0, 0, 0)
+end
+function BasicNode.prototype.getEyeDirection(self)
+    _transform:reset()
+    local ____ = self
+    local rx = ____.rx
+    local ry = ____.ry
+    local rz = ____.rz
+    local rw = ____.rw
+    _transform:rotateQuat(rx, ry, rz, rw)
+    local x, y, z, w = _transform:transformVec(0, 0, -1, 0)
+    return x, y, z
+end
 ____exports.Primitive = __TS__Class()
 local Primitive = ____exports.Primitive
 Primitive.name = "Primitive"
